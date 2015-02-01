@@ -295,14 +295,29 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        state = self.startingPosition
+        cornersIndicator = 0
+        if state in self.corners:
+            cornerNumber = 0
+            for corner in self.corners:
+                if state == corner:
+                    cornersIndicator += (cornerNumber+1)*(cornerNumber+1)
+                    break
+                cornerNumber += 1
+        stateTest = (state, cornersIndicator)
+        return stateTest
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        position = state[0]
+        indicator = state[1]
+        if indicator == 30:
+
+            return True
+        return False
 
     def getSuccessors(self, state):
         """
@@ -314,8 +329,11 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-
         successors = []
+        parentPosition = state[0]
+        x,y = parentPosition
+        parentIndicator = state[1]
+        indicator = parentIndicator
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
@@ -323,9 +341,26 @@ class CornersProblem(search.SearchProblem):
             #   dx, dy = Actions.directionToVector(action)
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
-
             "*** YOUR CODE HERE ***"
-
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            if self.walls[nextx][nexty]:
+                continue
+            position = (nextx, nexty)
+            if position in self.corners:
+                cornerNumber = 0
+                for corner in self.corners:
+                    if ((position == corner) and
+                        not (cornerNumber == 0 and indicator in (1, 5, 10, 17, 14, 21, 26, 30)) and
+                        not (cornerNumber == 1 and indicator in (4, 5, 13, 20, 14, 21, 29, 30)) and
+                        not (cornerNumber == 2 and indicator in (9, 10, 13, 25, 14, 26, 29, 30)) and
+                        not (cornerNumber == 3 and indicator in (16, 17, 20, 25, 21, 26, 29, 30))):
+                        indicator += (cornerNumber+1)*(cornerNumber+1)
+                        break
+                    cornerNumber += 1
+            successor = ((position, indicator), action, 1)
+            successors.append(successor)
+            indicator = parentIndicator
         self._expanded += 1 # DO NOT CHANGE
         return successors
 

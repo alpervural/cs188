@@ -398,7 +398,6 @@ def cornersHeuristic(state, problem):
         return 0
     position = state[0]
     indicator = state[1]
-    cornersDistance = []
     cornersNotVisited = []
     if indicator not in (1, 5, 10, 17, 14, 21, 26, 30):
         cornersNotVisited.append(corners[0])
@@ -408,9 +407,15 @@ def cornersHeuristic(state, problem):
         cornersNotVisited.append(corners[2])
     if indicator not in (16, 17, 20, 25, 21, 26, 29, 30):
         cornersNotVisited.append(corners[3])
-    for corner in cornersNotVisited:
-        cornersDistance.append(abs(position[0] - corner[0]) + abs(position[1] - corner[1]))
-    heuristic = min(cornersDistance) + ((len(cornersNotVisited) - 1) * min(corners[3][0]-1, corners[3][1]-1))
+    heuristic = 0
+    cornersDistance = []
+    while len(cornersNotVisited) != 0:
+        for corner in cornersNotVisited:
+            cornersDistance.append(abs(position[0] - corner[0]) + abs(position[1] - corner[1]))
+        indexClosestCorner = cornersDistance.index(min(cornersDistance))
+        position = cornersNotVisited.pop(indexClosestCorner)
+        heuristic += min(cornersDistance)
+        cornersDistance = []
     return heuristic
     
 

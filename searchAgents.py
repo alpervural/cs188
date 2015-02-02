@@ -40,6 +40,7 @@ from game import Actions
 import util
 import time
 import search
+import math
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -488,8 +489,21 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
+    walls = problem.walls.asList()
     "*** YOUR CODE HERE ***"
-    return 0
+    closest = -1
+    farthest = -1
+    if foodGrid.count() == 0:
+        return 0
+    for pellet in foodGrid.asList():
+        x1, y1 = position
+        x2, y2 = pellet
+        dist = math.fabs(x1-x2) + math.fabs(y1-y2)
+        if(closest == -1 or dist < closest):
+            closest = dist
+        if(dist > farthest):
+            farthest = dist
+    return max(foodGrid.count() - 1 + closest, farthest)
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"

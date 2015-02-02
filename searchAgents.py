@@ -507,15 +507,12 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     walls = problem.walls.asList()
+    pi = problem.heuristicInfo
     "*** YOUR CODE HERE ***"
-    closest = -1
-    farthest = -1
     if foodGrid.count() == 0:
         return 0
     for pellet in foodGrid.asList():
-        x1, y1 = position
-        x2, y2 = pellet
-        dist = math.fabs(x1-x2) + math.fabs(y1-y2)
+        dist = mazeDistance(position, pellet, problem.getGameState()) 
         if(closest == -1 or dist < closest):
             closest = dist
         if(dist > farthest):
@@ -551,7 +548,25 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        closed = set()
+        fringe = util.PriorityQueue()
+        fringe.push([(problem.getStartState(), None, None)], 0)
+        while not fringe.isEmpty():
+            node = fringe.pop()
+            if problem.isGoalState(node[-1][0]):
+                node = node[1:]
+                path = [child[1] for child in node]
+                return path
+            if node[-1][0] not in closed:
+                closed.add(node[-1][0])
+                children = problem.getSuccessors(node[-1][0])
+                for child in children:
+                    node.append(child)
+                    path = [child[1] for child in node[1:]]
+                    cost = problem.getCostOfActions(path)
+                    fringe.push(node, cost)
+                    node = node[:-1]
+        return
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -587,7 +602,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return state in self.food.asList()
 
 def mazeDistance(point1, point2, gameState):
     """

@@ -514,10 +514,12 @@ def foodHeuristic(state, problem):
     walls = problem.walls.asList()
     pi = problem.heuristicInfo
     "*** YOUR CODE HERE ***"
+    closest = -1
+    farthest = 0
     if foodGrid.count() == 0:
         return 0
     for pellet in foodGrid.asList():
-        dist = mazeDistance(position, pellet, problem.getGameState()) 
+        dist = mazeDistance(position, pellet, problem.startingGameState) 
         if(closest == -1 or dist < closest):
             closest = dist
         if(dist > farthest):

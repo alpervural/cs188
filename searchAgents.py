@@ -296,6 +296,12 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
+        """
+        For each state, we have an indicator that indicates if a corner has been visited.
+        When a corner (0,1,2,3) is visited, the indicator is incremented by (cornerNumber+1)*(cornerNumber+1).
+        Each combination of corners visited yields a specific indicator so it is then easy to extract the information
+        regarding the corners visited from the indicator.
+        """
         state = self.startingPosition
         cornersIndicator = 0
         if state in self.corners:
@@ -312,11 +318,14 @@ class CornersProblem(search.SearchProblem):
         """
         Returns whether this search state is a goal state of the problem.
         """
+        """
+        When all corners have been visited,
+        indicator = (0+1)^2 + (1+1)^2 + (2+1)^2 + (3+1)^2 = 1 + 4 + 9 + 16 = 30
+        """
         "*** YOUR CODE HERE ***"
         position = state[0]
         indicator = state[1]
         if indicator == 30:
-
             return True
         return False
 
@@ -348,7 +357,7 @@ class CornersProblem(search.SearchProblem):
             if self.walls[nextx][nexty]:
                 continue
             position = (nextx, nexty)
-            if position in self.corners:
+            if position in self.corners: # if the child is a corner, we update its indicator accordingly
                 cornerNumber = 0
                 for corner in self.corners:
                     if ((position == corner) and
@@ -394,6 +403,11 @@ def cornersHeuristic(state, problem):
     """
     corners = problem.corners # These are the corner coordinates: ((1,1), (1,top), (right, 1), (right, top))
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+    """
+    The heuristic for each state is the sum of  the Manhattan distance to the closest non visited corner A,
+    and the Manhattan distances from one corner to the closest other non visited
+    starting from A.
+    """
     "*** YOUR CODE HERE ***"
     if problem.isGoalState(state):
         return 0
